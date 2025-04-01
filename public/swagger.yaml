@@ -1,0 +1,378 @@
+openapi: 3.0.0
+info:
+  title: API REST - Órdenes y Detalles de Compra
+  description: Documentación de la API para la gestión de órdenes y detalles de compras.
+  version: 1.0.0
+
+servers:
+  - url: https://api-rest-ordenes-detalles-compra.onrender.com/apiV1/
+    description: Servidor en Render
+
+paths:
+  /orders:
+    get:
+      summary: Obtener todas las órdenes
+      description: Devuelve una lista de todas las órdenes almacenadas en Firestore.
+      responses:
+        "200":
+          description: Lista de órdenes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Orden"
+        "500":
+          description: Error al obtener las órdenes
+
+    post:
+      summary: Crear una nueva orden
+      description: Crea una nueva orden con los datos proporcionados.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Orden'
+      responses:
+        '201':
+          description: Orden creada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenResponse'
+
+  /orders/{id}:
+    get:
+      summary: Obtener una orden por ID
+      description: Recupera una orden específica mediante su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Datos de la orden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Orden"
+        "404":
+          description: La orden no existe
+        "500":
+          description: Error del servidor
+
+    put:
+      summary: Actualizar detalles de una orden
+      description: Actualiza los detalles de una orden existente.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Orden'
+      responses:
+        '200':
+          description: Orden actualizada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenResponse'
+
+    delete:
+      summary: Eliminar una orden
+      description: Elimina una orden específica.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pedido eliminado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: "Pedido eliminado correctamente"
+
+  /orders/{id}/productos:
+    get:
+      summary: Obtener productos de una orden
+      description: Devuelve los productos asociados a una orden específica.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Productos asociados a la orden
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductoOrden"
+        "404":
+          description: La orden no existe
+        "500":
+          description: Error del servidor
+
+  /orders/{id}/descuentos:
+    get:
+      summary: Obtener descuentos aplicados a una orden
+      description: Muestra los descuentos aplicados a una orden específica.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Descuentos aplicados a la orden
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Descuento"
+        "404":
+          description: La orden no existe
+        "500":
+          description: Error del servidor
+
+  /orders/{id}/envio:
+    get:
+      summary: Obtener estado del envío de una orden
+      description: Recupera el estado actual del envío de una orden.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Estado del envío de la orden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstadoEnvio"
+        "404":
+          description: La orden no existe
+        "500":
+          description: Error del servidor
+
+  /orders/{id}/status:
+    put:
+      summary: Actualizar estado de la orden
+      description: Permite actualizar el estado y envío de una orden específica.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nuevoEstadoEnvio:
+                  type: string
+                  example: "Entregado"
+                ubicacionActual:
+                  type: string
+                  example: "Dirección del cliente"
+      responses:
+        '200':
+          description: Estado de la orden actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Estado del pedido actualizado"
+                  estado:
+                    type: string
+                    example: "Completado"
+                  estadoEnvio:
+                    type: string
+                    example: "Entregado"
+
+  /orders/{id}/descuento:
+    put:
+      summary: Aplicar un descuento a una orden
+      description: Aplica un descuento a la orden utilizando un código promocional.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cupón:
+                  type: object
+                  properties:
+                    codigo:
+                      type: string
+                      example: "OFERTA20"
+                    porcentaje:
+                      type: integer
+                      example: 20
+                    vigencia:
+                      type: string
+                      format: date
+                      example: "2025-12-31"
+      responses:
+        '200':
+          description: Descuento aplicado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Descuento aplicado correctamente"
+                  descuento:
+                    type: object
+                    properties:
+                      codigo:
+                        type: string
+                        example: "OFERTA20"
+                      porcentaje:
+                        type: integer
+                        example: 20
+                      vigencia:
+                        type: string
+                        format: date
+                        example: "2025-12-31"
+
+components:
+  schemas:
+    Orden:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID de la orden
+        clienteId:
+          type: string
+          description: ID del cliente que hizo la orden
+        fechaPedido:
+          type: string
+          format: date-time
+          description: Fecha en la que se hizo el pedido
+        total:
+          type: number
+          description: Total de la orden
+        estado:
+          type: string
+          enum: [Pendiente, Confirmada, Enviada, Cancelada]
+          description: Estado actual de la orden
+        productos:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductoOrden"
+        descuentosAplicados:
+          type: array
+          items:
+            $ref: "#/components/schemas/Descuento"
+        estadoEnvio:
+          $ref: "#/components/schemas/EstadoEnvio"
+      example:
+        id: "12345"
+        clienteId: "67890"
+        fechaPedido: "2024-03-02T14:30:00Z"
+        total: 2999.99
+        estado: "Pendiente"
+        productos:
+          - productoId: "A1B2C3"
+            nombre: "Teclado Mecánico"
+            cantidad: 1
+            precioUnitario: 999.99
+        descuentosAplicados:
+          - codigo: "PROMO10"
+            porcentaje: 10
+            valorDescuento: 300
+        estadoEnvio:
+          estadoActual: "En tránsito"
+          fechaEstimacion: "2024-03-05T18:00:00Z"
+
+    ProductoOrden:
+      type: object
+      properties:
+        productoId:
+          type: string
+          description: ID del producto
+        nombre:
+          type: string
+          description: Nombre del producto
+        cantidad:
+          type: integer
+          description: Cantidad comprada
+        precioUnitario:
+          type: number
+          description: Precio unitario del producto
+      example:
+        productoId: "A1B2C3"
+        nombre: "Teclado Mecánico"
+        cantidad: 1
+        precioUnitario: 999.99
+
+    Descuento:
+      type: object
+      properties:
+        codigo:
+          type: string
+          description: Código del descuento
+        porcentaje:
+          type: number
+          description: Porcentaje de descuento aplicado
+        valorDescuento:
+          type: number
+          description: Valor monetario del descuento aplicado
+      example:
+        codigo: "PROMO10"
+        porcentaje: 10
+        valorDescuento: 300
+
+    EstadoEnvio:
+      type: object
+      properties:
+        estadoActual:
+          type: string
+          description: Estado actual del envío
+        fechaEstimacion:
+          type: string
+          format: date-time
+          description: Fecha estimada de entrega
+      example:
+        estadoActual: "En tránsito"
+        fechaEstimacion: "2024-03-05T18:00:00Z"
