@@ -79,7 +79,6 @@ paths:
         "200":
           description: Datos de progreso
 
-  /progreso/{id}:
     patch:
       tags: [Progreso]
       summary: Actualizar progreso del jugador
