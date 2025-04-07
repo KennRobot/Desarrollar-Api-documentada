@@ -1,124 +1,24 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  title: API REST - Jugadores y Estadísticas
-  description: API para gestionar jugadores, niveles, experiencia, logros y solicitudes de amistad en un videojuego.
+  title: API de Videojuego - Jugadores y Progreso
   version: 1.0.0
+  description: API REST para gestionar jugadores, autenticación, progreso y solicitudes de amistad en un videojuego.
 
 servers:
-  - url: https://tu-api-jugadores.onrender.com/api
-    description: Servidor en Render
+  - url: https://desarrollar-api-documentada.onrender.com/apiV1
+    description: Servidor principal
+
+tags:
+  - name: Usuarios
+  - name: Jugadores
+  - name: Progreso
+  - name: Solicitudes
 
 paths:
-  /jugadores:
-    get:
-      summary: Obtener todos los jugadores
-      description: Retorna una lista con todos los jugadores registrados.
-      responses:
-        "200":
-          description: Lista de jugadores
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Jugador"
-        "500":
-          description: Error al obtener los jugadores
-
+  /usuarios/registro:
     post:
-      summary: Crear un nuevo jugador
-      description: Registra un nuevo jugador en el sistema.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Jugador"
-      responses:
-        "201":
-          description: Jugador creado exitosamente
-
-  /jugadores/{id}:
-    get:
-      summary: Obtener jugador por ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Información del jugador
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Jugador"
-        "404":
-          description: Jugador no encontrado
-
-    put:
-      summary: Actualizar jugador
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Jugador"
-      responses:
-        "200":
-          description: Jugador actualizado
-
-    delete:
-      summary: Eliminar jugador
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Jugador eliminado correctamente
-
-  /jugadores/{id}/experiencia:
-    put:
-      summary: Actualizar experiencia y nivel
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                experienciaGanada:
-                  type: integer
-                  example: 150
-      responses:
-        "200":
-          description: Experiencia y nivel actualizados
-
-  /jugadores/{id}/logros:
-    post:
-      summary: Agregar logro a jugador
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+      tags: [Usuarios]
+      summary: Registrar nuevo usuario
       requestBody:
         required: true
         content:
@@ -128,17 +28,61 @@ paths:
               properties:
                 nombre:
                   type: string
-                  example: "Primera victoria"
-                descripcion:
+                email:
                   type: string
-                  example: "Ganó su primera partida"
+                password:
+                  type: string
+              required: [nombre, email, password]
       responses:
         "200":
-          description: Logro agregado
+          description: Usuario registrado
 
-  /jugadores/{id}/amigos:
+  /usuarios/login:
     post:
-      summary: Enviar solicitud de amistad
+      tags: [Usuarios]
+      summary: Iniciar sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required: [email, password]
+      responses:
+        "200":
+          description: Login exitoso
+
+  /players:
+    get:
+      tags: [Jugadores]
+      summary: Obtener todos los jugadores
+      responses:
+        "200":
+          description: Lista de jugadores
+
+  /progreso/{id}:
+    get:
+      tags: [Progreso]
+      summary: Obtener progreso de un jugador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Datos de progreso
+
+  /progreso/{id}:
+    patch:
+      tags: [Progreso]
+      summary: Actualizar progreso del jugador
       parameters:
         - name: id
           in: path
@@ -152,15 +96,49 @@ paths:
             schema:
               type: object
               properties:
-                receptorId:
-                  type: string
+                experiencia:
+                  type: integer
+                nivel:
+                  type: integer
+                logros:
+                  type: array
+                  items:
+                    type: string
       responses:
         "200":
-          description: Solicitud enviada
+          description: Progreso actualizado
 
-  /jugadores/{id}/solicitudes:
+  /usuarios/solicitud:
     get:
-      summary: Obtener solicitudes de amistad
+      tags: [Solicitudes]
+      summary: Obtener todas las solicitudes de amistad
+      responses:
+        "200":
+          description: Lista de solicitudes
+
+    post:
+      tags: [Solicitudes]
+      summary: Enviar solicitud de amistad
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                de_usuario_id:
+                  type: string
+                para_usuario_id:
+                  type: string
+              required: [de_usuario_id, para_usuario_id]
+      responses:
+        "200":
+          description: Solicitud creada
+
+  /usuarios/solicitud/{id}:
+    get:
+      tags: [Solicitudes]
+      summary: Obtener detalles de una solicitud
       parameters:
         - name: id
           in: path
@@ -169,71 +147,64 @@ paths:
             type: string
       responses:
         "200":
-          description: Lista de solicitudes
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Solicitud"
+          description: Detalles de la solicitud
+
+    patch:
+      tags: [Solicitudes]
+      summary: Aceptar o rechazar solicitud
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                estado:
+                  type: string
+                  enum: [aceptada, rechazada]
+              required: [estado]
+      responses:
+        "200":
+          description: Solicitud actualizada
+
+    delete:
+      tags: [Solicitudes]
+      summary: Eliminar solicitud de amistad
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Solicitud eliminada
+
+  /usuarios/solicitud/usuario/{id}:
+    get:
+      tags: [Solicitudes]
+      summary: Obtener solicitudes para un usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista de solicitudes para el usuario
 
 components:
-  schemas:
-    Jugador:
-      type: object
-      properties:
-        id:
-          type: string
-        nombre:
-          type: string
-        nivel:
-          type: integer
-        experiencia:
-          type: integer
-        logros:
-          type: array
-          items:
-            $ref: "#/components/schemas/Logro"
-        amigos:
-          type: array
-          items:
-            type: string
-        solicitudes:
-          type: array
-          items:
-            $ref: "#/components/schemas/Solicitud"
-      example:
-        id: "123"
-        nombre: "Jugador1"
-        nivel: 5
-        experiencia: 1500
-        logros:
-          - nombre: "Primera victoria"
-            descripcion: "Ganó su primera partida"
-        amigos: ["456", "789"]
-        solicitudes:
-          - de: "456"
-            estado: "pendiente"
-
-    Logro:
-      type: object
-      properties:
-        nombre:
-          type: string
-        descripcion:
-          type: string
-      example:
-        nombre: "Veterano"
-        descripcion: "Jugó 100 partidas"
-
-    Solicitud:
-      type: object
-      properties:
-        de:
-          type: string
-        estado:
-          type: string
-          enum: [pendiente, aceptada, rechazada]
-      example:
-        de: "456"
-        estado: "pendiente"
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
