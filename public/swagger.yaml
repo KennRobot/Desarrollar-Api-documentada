@@ -15,76 +15,66 @@ tags:
   - name: Solicitudes
 
 paths:
-  /usuarios/registro:
+  /usuarios/register:
     post:
-      tags: [Usuarios]
-      summary: Registrar nuevo usuario
+      summary: Registrar un nuevo jugador
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                nombre:
-                  type: string
-                email:
-                  type: string
-                password:
-                  type: string
-              required: [nombre, email, password]
+              $ref: '#/components/schemas/UsuarioRegistro'
       responses:
-        "200":
-          description: Usuario registrado
+        '201':
+          description: Usuario registrado con éxito
 
   /usuarios/login:
     post:
-      tags: [Usuarios]
-      summary: Iniciar sesión
+      summary: Autenticación y obtención de token
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
-              required: [email, password]
+              $ref: '#/components/schemas/LoginRequest'
       responses:
-        "200":
-          description: Login exitoso
+        '200':
+          description: Autenticación exitosa
 
-  /players:
+  /usuarios/{id}:
     get:
-      tags: [Jugadores]
-      summary: Obtener todos los jugadores
-      responses:
-        "200":
-          description: Lista de jugadores
-
-  /progreso/{id}:
-    get:
-      tags: [Progreso]
-      summary: Obtener progreso de un jugador
+      summary: Obtener datos de un usuario
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
           schema:
             type: string
       responses:
-        "200":
-          description: Datos de progreso
-
+        '200':
+          description: Datos del usuario
+    put:
+      summary: Actualizar información del jugador
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioUpdate'
+      responses:
+        '200':
+          description: Usuario actualizado
     patch:
-      tags: [Progreso]
-      summary: Actualizar progreso del jugador
+      summary: Actualizar información del jugador parcialmente
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
           schema:
             type: string
@@ -94,66 +84,94 @@ paths:
           application/json:
             schema:
               type: object
-              properties:
-                experiencia:
-                  type: integer
-                nivel:
-                  type: integer
-                logros:
-                  type: array
-                  items:
-                    type: string
       responses:
-        "200":
+        '200':
+          description: Usuario actualizado parcialmente
+    delete:
+      summary: Eliminar un usuario
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuario eliminado
+
+  /usuarios/{id}/progreso:
+    get:
+      summary: Obtener el progreso del jugador
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Progreso del jugador
+    put:
+      summary: Actualizar nivel y experiencia
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgresoUpdate'
+      responses:
+        '200':
           description: Progreso actualizado
 
-  /usuarios/solicitud:
-    get:
-      tags: [Solicitudes]
-      summary: Obtener todas las solicitudes de amistad
-      responses:
-        "200":
-          description: Lista de solicitudes
-
+  /usuarios/{id}/subirNivel:
     post:
-      tags: [Solicitudes]
-      summary: Enviar solicitud de amistad
+      summary: Sube el nivel del jugador
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Nivel subido
+
+  /usuarios/solicitud:
+    post:
+      summary: Registrar una solicitud de amistad
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                de_usuario_id:
-                  type: string
-                para_usuario_id:
-                  type: string
-              required: [de_usuario_id, para_usuario_id]
+              $ref: '#/components/schemas/SolicitudAmistad'
       responses:
-        "200":
-          description: Solicitud creada
+        '200':
+          description: Solicitud registrada
 
   /usuarios/solicitud/{id}:
     get:
-      tags: [Solicitudes]
-      summary: Obtener detalles de una solicitud
+      summary: Obtener datos de una solicitud o lista de solicitudes de un usuario
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
           schema:
             type: string
       responses:
-        "200":
-          description: Detalles de la solicitud
-
+        '200':
+          description: Datos de la solicitud o solicitudes del usuario
     patch:
-      tags: [Solicitudes]
-      summary: Aceptar o rechazar solicitud
+      summary: Actualizar el estado de una solicitud
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
           schema:
             type: string
@@ -167,43 +185,71 @@ paths:
                 estado:
                   type: string
                   enum: [aceptada, rechazada]
-              required: [estado]
       responses:
-        "200":
-          description: Solicitud actualizada
-
+        '200':
+          description: Estado de solicitud actualizado
     delete:
-      tags: [Solicitudes]
-      summary: Eliminar solicitud de amistad
+      summary: Eliminar Solicitud
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Solicitud eliminada
 
-  /usuarios/solicitud/usuario/{id}:
-    get:
-      tags: [Solicitudes]
-      summary: Obtener solicitudes para un usuario
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Lista de solicitudes para el usuario
-
 components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-security:
-  - bearerAuth: []
+  schemas:
+    UsuarioRegistro:
+      type: object
+      required:
+        - nombre
+        - email
+        - password
+      properties:
+        nombre:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    UsuarioUpdate:
+      type: object
+      properties:
+        nombre:
+          type: string
+        email:
+          type: string
+
+    ProgresoUpdate:
+      type: object
+      properties:
+        nivel:
+          type: integer
+        experiencia:
+          type: integer
+
+    SolicitudAmistad:
+      type: object
+      required:
+        - de_usuario_id
+        - para_usuario_id
+      properties:
+        de_usuario_id:
+          type: string
+        para_usuario_id:
+          type: string
