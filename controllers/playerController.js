@@ -24,4 +24,3 @@ export const getAllPlayers = async (req, res) => {
         res.status(500).json({ error: "Error obteniendo jugadores" });
     }
 };
-
