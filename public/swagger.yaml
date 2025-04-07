@@ -8,12 +8,6 @@ servers:
   - url: https://desarrollar-api-documentada.onrender.com/apiV1
     description: Servidor principal
 
-tags:
-  - name: Usuarios
-  - name: Jugadores
-  - name: Progreso
-  - name: Solicitudes
-
 paths:
   /usuarios/register:
     post:
