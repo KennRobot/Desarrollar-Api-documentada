@@ -2,17 +2,19 @@ import express from "express";
 import friendRequestRoutes from "./routes/friendRequestRoutes.js";
 import usersRoutes from "./routes/usersRoutes.js";
 import progressRoutes from "./routes/progressRoutes.js";
-import playerRoutes from "./routes/playersRoutes.js";
 import path from "path";
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swagger.js';
+
 
 const app = express();
 const __dirname = path.resolve();
 
-app.use(express.json()); // Permitir JSON en las peticiones
+app.use(express.json()); 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/apiV1/usuarios", friendRequestRoutes);
 app.use("/apiV1/usuarios", usersRoutes);
 app.use("/apiV1/usuarios", progressRoutes);
-app.use("/apiV1/usuarios", playerRoutes);
 
 
 // Servir archivos estáticos desde la carpeta "public"

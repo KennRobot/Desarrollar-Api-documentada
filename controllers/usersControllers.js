@@ -296,3 +296,23 @@ export const deleteUser = async (req, res) => {
     }
 };
 
+// Obtener todos los usuarios (antes getAllPlayers en playerController)
+export const getAllUsers = async (req, res) => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "players")); // o "users" si renombras la colección
+      const users = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        delete data.password; // por seguridad
+        return {
+          id: doc.id,
+          ...data
+        };
+      });
+      return res.status(200).json(users);
+    } catch (error) {
+      console.error("Error obteniendo usuarios:", error);
+      return res.status(500).json({ error: "Error obteniendo usuarios" });
+    }
+  };
+  
+
