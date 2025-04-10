@@ -13,9 +13,12 @@ const options = {
       {
         url: 'http://localhost:3000/apiV1/usuarios',
         description: 'Servidor local'
+      },
+      {
+        url: 'https://desarrollar-api-documentada.onrender.com/apiV1/usuarios',
+        description: 'Servidor de producción'
       }
     ],
-    // Aquí definimos explícitamente el orden de los tags
     tags: [
       { name: 'Users', description: 'Operaciones sobre usuarios' },
       { name: 'Progress', description: 'Progreso y niveles de usuario' },
@@ -44,6 +47,5 @@ const options = {
     './controllers/*.js'
   ]
 };
-
 const swaggerSpec = swaggerJSDoc(options);
 export default swaggerSpec;

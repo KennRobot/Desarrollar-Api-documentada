@@ -5,12 +5,24 @@ info:
   description: API REST para gestionar jugadores, autenticación, progreso y solicitudes de amistad en un videojuego.
 
 servers:
+  - url: http://localhost:3000/apiV1
+    description: Servidor local
   - url: https://desarrollar-api-documentada.onrender.com/apiV1
     description: Servidor principal
+
+tags:
+  - name: Users
+    description: Operaciones sobre usuarios
+  - name: Progress
+    description: Progreso y niveles de usuario
+  - name: Friend Requests
+    description: Solicitudes de amistad
 
 paths:
   /usuarios/register:
     post:
+      tags:
+        - Users
       summary: Registrar un nuevo jugador
       requestBody:
         required: true
@@ -24,6 +36,8 @@ paths:
 
   /usuarios/login:
     post:
+      tags:
+        - Users
       summary: Autenticación y obtención de token
       requestBody:
         required: true
@@ -37,6 +51,8 @@ paths:
 
   /usuarios/{id}:
     get:
+      tags:
+        - Users
       summary: Obtener datos de un usuario
       parameters:
         - in: path
@@ -48,6 +64,8 @@ paths:
         '200':
           description: Datos del usuario
     put:
+      tags:
+        - Users
       summary: Actualizar información del jugador
       parameters:
         - in: path
@@ -65,6 +83,8 @@ paths:
         '200':
           description: Usuario actualizado
     patch:
+      tags:
+        - Users
       summary: Actualizar información del jugador parcialmente
       parameters:
         - in: path
@@ -82,6 +102,8 @@ paths:
         '200':
           description: Usuario actualizado parcialmente
     delete:
+      tags:
+        - Users
       summary: Eliminar un usuario
       parameters:
         - in: path
@@ -95,6 +117,8 @@ paths:
 
   /usuarios/{id}/progreso:
     get:
+      tags:
+        - Progress
       summary: Obtener el progreso del jugador
       parameters:
         - in: path
@@ -106,6 +130,8 @@ paths:
         '200':
           description: Progreso del jugador
     put:
+      tags:
+        - Progress
       summary: Actualizar nivel y experiencia
       parameters:
         - in: path
@@ -125,6 +151,8 @@ paths:
 
   /usuarios/{id}/subirNivel:
     post:
+      tags:
+        - Progress
       summary: Sube el nivel del jugador
       parameters:
         - in: path
@@ -138,6 +166,8 @@ paths:
 
   /usuarios/solicitud:
     post:
+      tags:
+        - Friend Requests
       summary: Registrar una solicitud de amistad
       requestBody:
         required: true
@@ -151,6 +181,8 @@ paths:
 
   /usuarios/solicitud/{id}:
     get:
+      tags:
+        - Friend Requests
       summary: Obtener datos de una solicitud o lista de solicitudes de un usuario
       parameters:
         - in: path
@@ -162,6 +194,8 @@ paths:
         '200':
           description: Datos de la solicitud o solicitudes del usuario
     patch:
+      tags:
+        - Friend Requests
       summary: Actualizar el estado de una solicitud
       parameters:
         - in: path
@@ -183,6 +217,8 @@ paths:
         '200':
           description: Estado de solicitud actualizado
     delete:
+      tags:
+        - Friend Requests
       summary: Eliminar Solicitud
       parameters:
         - in: path
