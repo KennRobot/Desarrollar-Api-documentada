@@ -15,7 +15,7 @@ const options = {
         description: 'Servidor local'
       },
       {
-        url: 'https://desarrollar-api-documentada.onrender.com/apiV1/usuarios',
+        url: 'https://api-players-4mub.onrender.com/apiV1/usuarios',
         description: 'Servidor de producción'
       }
     ],

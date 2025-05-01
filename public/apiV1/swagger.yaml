@@ -7,7 +7,7 @@ info:
 servers:
   - url: http://localhost:3000/apiV1
     description: Servidor local
-  - url: https://desarrollar-api-documentada.onrender.com/apiV1
+  - url: https://api-players-4mub.onrender.com/apiV1
     description: Servidor principal
 
 tags:
